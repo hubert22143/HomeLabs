@@ -81,14 +81,3 @@ To review the completed labs:
 1. Download or clone this repository.
 2. Open a selected `.pkt` file using Cisco Packet Tracer.
 3. Inspect the topology, addressing, and device configurations.
-4. Use verification commands to review the configuration, such as:
-
-show ip interface brief
-show running-config
-show vlan brief
-show interfaces trunk
-show spanning-tree
-show ip route
-show ip ospf neighbor
-ping
-traceroute
