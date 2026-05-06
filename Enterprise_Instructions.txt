@@ -1,0 +1,294 @@
+Part 1 - Initial Setup
+
+1. Set the correct hostname on every router and switch.
+2. Configure the enable secret as user on every router and switch. Use type 9 hashing if supported; otherwise, use type 5.
+3. Create a local user account named admin with the password password on every router and switch. Use type 9 hashing if supported; otherwise, use type 5.
+4. Configure the console line to authenticate using the local user database. Set the inactivity timeout to 30 minutes and enable synchronous logging.
+
+Part 2 - VLANs and Layer-2 EtherChannel
+
+1. In Office A, configure Layer-2 EtherChannel PortChannel1 between DSW-A1 and DSW-A2 using a Cisco-proprietary protocol. Both switches should actively attempt to form the EtherChannel.
+2. In Office B, configure Layer-2 EtherChannel PortChannel1 between DSW-B1 and DSW-B2 using an open standard protocol. Both switches should actively attempt to form the EtherChannel.
+3. Configure all Access-to-Distribution links, including EtherChannels, as trunk links.
+   a. Disable DTP explicitly on every trunk port.
+   b. Set the native VLAN on each trunk to unused VLAN 1000.
+   c. In Office A, allow VLANs 10, 20, 40, and 99 on all trunks.
+   d. In Office B, allow VLANs 10, 20, 30, and 99 on all trunks.
+4. Configure one Distribution switch in each office as a VTPv2 server using the domain name NetworkLab.
+   a. Confirm that the other switches join the VTP domain.
+   b. Configure all Access switches as VTP clients.
+5. In Office A, create and name these VLANs on one Distribution switch, then verify that VTP shares the changes:
+   a. VLAN 10: PCs
+   b. VLAN 20: Phones
+   c. VLAN 40: Wi-Fi
+   d. VLAN 99: Management
+6. In Office B, create and name these VLANs on one Distribution switch, then verify that VTP shares the changes:
+   a. VLAN 10: PCs
+   b. VLAN 20: Phones
+   c. VLAN 30: Servers
+   d. VLAN 99: Management
+7. Configure each Access switch access port.
+   a. LWAPs should not use FlexConnect.
+   b. Place PCs in VLAN 10 and phones in VLAN 20.
+   c. Place SRV1 in VLAN 30.
+   d. Manually configure access mode and explicitly disable DTP.
+8. Configure the ASW-A1 link to WLC1.
+   a. The link must carry both the Wi-Fi and Management VLANs.
+   b. The Management VLAN should be untagged.
+   c. Disable DTP.
+9. Administratively shut down all unused ports on Access and Distribution switches.
+
+Part 3 - IP Addresses, Layer-3 EtherChannel, and HSRP
+
+1. Configure and enable these IP settings on R1:
+   a. G0/0/0: DHCP client
+   b. G0/1/0: DHCP client
+   c. G0/0: 10.0.0.33/30
+   d. G0/1: 10.0.0.37/30
+   e. Loopback0: 10.0.0.76/32
+2. Enable IPv4 routing on all Core and Distribution switches.
+3. Configure a Layer-3 EtherChannel between CSW1 and CSW2 using a Cisco-proprietary protocol. Both switches should actively form the EtherChannel.
+   a. CSW1 PortChannel1: 10.0.0.41/30
+   b. CSW2 PortChannel1: 10.0.0.42/30
+4. Configure CSW1 with these addresses and disable unused interfaces:
+   a. G1/0/1: 10.0.0.34/30
+   b. G1/1/1: 10.0.0.45/30
+   c. G1/1/2: 10.0.0.49/30
+   d. G1/1/3: 10.0.0.53/30
+   e. G1/1/4: 10.0.0.57/30
+   f. Loopback0: 10.0.0.77/32
+5. Configure CSW2 with these addresses and disable unused interfaces:
+   a. G1/0/1: 10.0.0.38/30
+   b. G1/1/1: 10.0.0.61/30
+   c. G1/1/2: 10.0.0.65/30
+   d. G1/1/3: 10.0.0.69/30
+   e. G1/1/4: 10.0.0.73/30
+   f. Loopback0: 10.0.0.78/32
+6. Configure DSW-A1:
+   a. G1/1/1: 10.0.0.46/30
+   b. G1/1/2: 10.0.0.62/30
+   c. Loopback0: 10.0.0.79/32
+7. Configure DSW-A2:
+   a. G1/1/1: 10.0.0.50/30
+   b. G1/1/2: 10.0.0.66/30
+   c. Loopback0: 10.0.0.80/32
+8. Configure DSW-B1:
+   a. G1/1/1: 10.0.0.54/30
+   b. G1/1/2: 10.0.0.70/30
+   c. Loopback0: 10.0.0.81/32
+9. Configure DSW-B2:
+   a. G1/1/1: 10.0.0.58/30
+   b. G1/1/2: 10.0.0.74/30
+   c. Loopback0: 10.0.0.82/32
+10. Manually configure SRV1:
+   a. Default gateway: 10.5.0.1
+   b. IPv4 address: 10.5.0.4
+   c. Subnet mask: 255.255.255.0
+11. Configure VLAN 99 management IPs on the Access switches and set the first usable address in each subnet as the default gateway.
+   a. ASW-A1: 10.0.0.4/28
+   b. ASW-A2: 10.0.0.5/28
+   c. ASW-A3: 10.0.0.6/28
+   d. ASW-B1: 10.0.0.20/28
+   e. ASW-B2: 10.0.0.21/28
+   f. ASW-B3: 10.0.0.22/28
+12. Configure HSRPv2 group 1 for Office A Management VLAN 99. Make DSW-A1 active by setting its priority 5 above default and enabling preemption.
+   a. Subnet: 10.0.0.0/28
+   b. VIP: 10.0.0.1
+   c. DSW-A1: 10.0.0.2
+   d. DSW-A2: 10.0.0.3
+13. Configure HSRPv2 group 2 for Office A PCs VLAN 10. Make DSW-A1 active with priority 5 above default and preemption enabled.
+   a. Subnet: 10.1.0.0/24
+   b. VIP: 10.1.0.1
+   c. DSW-A1: 10.1.0.2
+   d. DSW-A2: 10.1.0.3
+14. Configure HSRPv2 group 3 for Office A Phones VLAN 20. Make DSW-A2 active with priority 5 above default and preemption enabled.
+   a. Subnet: 10.2.0.0/24
+   b. VIP: 10.2.0.1
+   c. DSW-A1: 10.2.0.2
+   d. DSW-A2: 10.2.0.3
+15. Configure HSRPv2 group 4 for Office A Wi-Fi VLAN 40. Make DSW-A2 active with priority 5 above default and preemption enabled.
+   a. Subnet: 10.6.0.0/24
+   b. VIP: 10.6.0.1
+   c. DSW-A1: 10.6.0.2
+   d. DSW-A2: 10.6.0.3
+16. Configure HSRPv2 group 1 for Office B Management VLAN 99. Make DSW-B1 active with priority 5 above default and preemption enabled.
+   a. Subnet: 10.0.0.16/28
+   b. VIP: 10.0.0.17
+   c. DSW-B1: 10.0.0.18
+   d. DSW-B2: 10.0.0.19
+17. Configure HSRPv2 group 2 for Office B PCs VLAN 10. Make DSW-B1 active with priority 5 above default and preemption enabled.
+   a. Subnet: 10.3.0.0/24
+   b. VIP: 10.3.0.1
+   c. DSW-B1: 10.3.0.2
+   d. DSW-B2: 10.3.0.3
+18. Configure HSRPv2 group 3 for Office B Phones VLAN 20. Make DSW-B2 active with priority 5 above default and preemption enabled.
+   a. Subnet: 10.4.0.0/24
+   b. VIP: 10.4.0.1
+   c. DSW-B1: 10.4.0.2
+   d. DSW-B2: 10.4.0.3
+19. Configure HSRPv2 group 4 for Office B Servers VLAN 30. Make DSW-B2 active with priority 5 above default and preemption enabled.
+   a. Subnet: 10.5.0.0/24
+   b. VIP: 10.5.0.1
+   c. DSW-B1: 10.5.0.2
+   d. DSW-B2: 10.5.0.3
+
+Part 4 - Rapid Spanning Tree Protocol
+
+1. Enable Rapid PVST+ on every Access and Distribution switch.
+   a. Match each VLAN’s Root Bridge to its HSRP Active router by using the lowest possible STP priority.
+   b. Set the HSRP Standby router for each VLAN to the next STP priority increment above the lowest value.
+2. Enable PortFast and BPDU Guard on all end-host-facing ports, including the WLC1 connection. Apply these settings in interface configuration mode.
+
+Part 5 - Static and Dynamic Routing
+
+1. Configure OSPF on R1’s LAN-facing interfaces and on all Layer-3 interfaces of Core and Distribution switches.
+   a. Use process ID 1 and Area 0.
+   b. Set each router ID manually to match the device’s loopback IP address.
+   c. On switches, use network commands that match each interface IP exactly.
+   d. On R1, enable OSPF directly under interface configuration mode.
+   e. Enable OSPF on all loopback interfaces and make loopbacks passive.
+   f. Make each Distribution switch SVI passive, except the Management VLAN SVI.
+   g. Configure physical OSPF neighbor links to use a network type that does not elect a DR or BDR. Leave the CSW1/CSW2 Layer-3 PortChannel interfaces at their default network type.
+2. Configure one recursive static default route for each R1 Internet connection.
+   a. Make the route through G0/1/0 a floating static route by setting its AD to 1 above the default.
+   b. Configure R1 as an OSPF ASBR so it advertises its default route into the OSPF domain.
+
+Part 6 - Network Services: DHCP, DNS, NTP, SNMP, Syslog, FTP, SSH, and NAT
+
+1. Configure these DHCP pools on R1 for Offices A and B. Exclude the first ten usable host addresses from each pool.
+   a. Pool: A-Mgmt
+      i. Subnet: 10.0.0.0/28
+      ii. Default gateway: 10.0.0.1
+      iii. Domain name: networklab.com
+      iv. DNS server: 10.5.0.4
+      v. WLC: 10.0.0.7
+   b. Pool: A-PC
+      i. Subnet: 10.1.0.0/24
+      ii. Default gateway: 10.1.0.1
+      iii. Domain name: networklab.com
+      iv. DNS server: 10.5.0.4
+   c. Pool: A-Phone
+      i. Subnet: 10.2.0.0/24
+      ii. Default gateway: 10.2.0.1
+      iii. Domain name: networklab.com
+      iv. DNS server: 10.5.0.4
+   d. Pool: B-Mgmt
+      i. Subnet: 10.0.0.16/28
+      ii. Default gateway: 10.0.0.17
+      iii. Domain name: networklab.com
+      iv. DNS server: 10.5.0.4
+      v. WLC: 10.0.0.7
+   e. Pool: B-PC
+      i. Subnet: 10.3.0.0/24
+      ii. Default gateway: 10.3.0.1
+      iii. Domain name: networklab.com
+      iv. DNS server: 10.5.0.4
+   f. Pool: B-Phone
+      i. Subnet: 10.4.0.0/24
+      ii. Default gateway: 10.4.0.1
+      iii. Domain name: networklab.com
+      iv. DNS server: 10.5.0.4
+   g. Pool: Wi-Fi
+      i. Subnet: 10.6.0.0/24
+      ii. Default gateway: 10.6.0.1
+      iii. Domain name: networklab.com
+      iv. DNS server: 10.5.0.4
+2. Configure the Distribution switches to relay wired DHCP broadcasts to R1’s Loopback0 address.
+3. Configure these DNS records on SRV1:
+   a. google.com = 172.253.62.100
+   b. youtube.com = 152.250.31.93
+   c. networklab.com = 66.235.200.145
+   d. www.networklab.com = networklab.com
+4. Configure all routers and switches to use networklab.com as the domain name and SRV1 as the DNS server.
+5. Configure NTP on R1.
+   a. Make R1 a stratum 5 NTP server.
+   b. Configure R1 to learn time from NTP server 216.239.35.0.
+   c. NTP synchronization may take a long time in Packet Tracer, so continue after completing the configuration.
+6. Configure all Core, Distribution, and Access switches to use R1’s loopback interface as their NTP server.
+   a. Clients should authenticate R1 using key number 1 with the password password.
+7. Configure the SNMP community string SNMPSTRING on all routers and switches. It should allow GET requests but block SET requests.
+8. Configure Syslog on all routers and switches.
+   a. Send Syslog messages of all severity levels to SRV1.
+   b. Enable buffered logging and reserve 8192 bytes for the log buffer.
+9. Use FTP on R1 to download a new IOS image from SRV1.
+   a. Configure R1’s default FTP username as admin and password as password.
+   b. Copy c2900-universalk9-mz.SPA.155-3.M4a.bin from SRV1 to R1’s flash storage.
+   c. Reboot R1 using the new IOS image, then delete the old image from flash.
+10. Configure SSH for secure remote access on every router and switch.
+   a. Generate RSA keys using the largest supported modulus size.
+   b. Permit SSHv2 only.
+   c. Create standard ACL 1 to allow only traffic sourced from Office A’s PC subnet, then apply it to all VTY lines.
+   d. Permit only SSH on the VTY lines.
+   e. Require SSH users to authenticate with the local user account admin using password password.
+   f. Enable synchronous logging on the VTY lines.
+11. Configure static NAT on R1 so Internet hosts can reach SRV1 using 203.0.113.113.
+12. Configure pool-based dynamic PAT on R1 so Office A PCs, Office A Phones, Office B PCs, Office B Phones, and Wi-Fi clients can access the Internet.
+   a. Use standard ACL 2 to define these inside local address ranges in order:
+      i. Office A PCs: 10.1.0.0/24
+      ii. Office A Phones: 10.2.0.0/24
+      iii. Office B PCs: 10.3.0.0/24
+      iv. Office B Phones: 10.4.0.0/24
+      v. Wi-Fi: 10.6.0.0/24
+   b. Create inside global address pool POOL1 using 203.0.113.200 through 203.0.113.207 with a /29 netmask.
+   c. Map ACL 2 to POOL1 and enable PAT. Verify Internet access by pinging networklab.com.
+   d. Test Internet failover by disabling R1 G0/0/0 and pinging again.
+      i. In Packet Tracer, remove and reapply the OSPF default-information originate command for failover testing.
+      ii. Re-enable G0/0/0, then remove and reapply default-information originate again.
+13. Disable CDP on all devices and enable LLDP.
+   a. Disable LLDP transmission on each Access switch F0/1 access port.
+
+Part 7 - Security: ACLs and Layer-2 Security Features
+
+1. Configure extended ACL OfficeA_to_OfficeB in the correct location.
+   a. Permit ICMP from the Office A PC subnet to the Office B PC subnet.
+   b. Deny all other traffic from the Office A PC subnet to the Office B PC subnet.
+   c. Permit all remaining traffic.
+   d. Apply the extended ACL according to standard best practice.
+2. Configure Port Security on each Access switch F0/1 port.
+   a. Allow only the minimum required number of MAC addresses.
+      i. SRV1 does not use virtualization, so it requires only one MAC address.
+   b. Use a violation mode that blocks invalid traffic while allowing valid traffic to continue. The switches should generate notifications when invalid traffic is detected.
+   c. Configure the switches to automatically save learned secure MAC addresses to the running configuration.
+3. Configure DHCP Snooping on all Access switches.
+   a. Enable DHCP Snooping for all active VLANs in each LAN.
+   b. Trust the appropriate ports.
+   c. Disable DHCP Option 82 insertion.
+   d. Set a DHCP rate limit of 15 packets per second on active untrusted ports.
+   e. Set a higher limit of 100 packets per second on ASW-A1’s connection to WLC1.
+4. Configure Dynamic ARP Inspection on all Access switches.
+   a. Enable it for all active VLANs in each LAN.
+   b. Trust the appropriate ports.
+   c. Enable all optional validation checks.
+
+Part 8 - IPv6
+
+1. Enable IPv6 routing and configure IPv6 addresses on R1, CSW1, and CSW2 to prepare for IPv6 migration.
+   a. R1 G0/0/0: 2001:db8:a::2/64
+   b. R1 G0/1/0: 2001:db8:b::2/64
+   c. R1 G0/0 and CSW1 G1/0/1: Use prefix 2001:db8:a1::/64 with EUI-64 interface IDs.
+   d. R1 G0/1 and CSW2 G1/0/1: Use prefix 2001:db8:a2::/64 with EUI-64 interface IDs.
+   e. CSW1 Po1 and CSW2 Po1: Enable IPv6 without using the ipv6 address command.
+2. Configure two IPv6 default static routes on R1.
+   a. Add a recursive route through next hop 2001:db8:a::1.
+   b. Add a fully specified route through next hop 2001:db8:b::1, and make it floating by setting the AD 1 higher than default.
+
+Part 9 - Wireless
+
+1. From one of the PCs, access the WLC1 GUI at https://10.0.0.7.
+   a. Username: admin
+   b. Password: password
+2. Configure a dynamic interface for the Wi-Fi WLAN using subnet 10.6.0.0/24.
+   a. Name: Wi-Fi
+   b. VLAN: 40
+   c. Port number: 1
+   d. IP address: 10.6.0.4
+   e. Gateway: 10.6.0.1
+   f. DHCP server: 10.0.0.76
+3. Configure and enable this WLAN:
+   a. Profile name: Wi-Fi
+   b. SSID: Wi-Fi
+   c. ID: 1
+   d. Status: Enabled
+   e. Security: WPA2 Policy with AES encryption and PSK password
+4. Verify that both LWAPs are associated with WLC1.
+   a. Because of Packet Tracer limitations, wireless clients may not be able to lease an IP address from the Wi-Fi DHCP pool.
