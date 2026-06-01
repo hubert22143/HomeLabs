@@ -1,4 +1,4 @@
-# Cisco Packet Tracer Networking Labs
+# CCNA Home Labs
 
 This repository contains a collection of completed Cisco Packet Tracer labs used for hands-on networking practice. The labs cover topics from basic device configuration and IP addressing to switching, routing, network services, security, IPv6, wireless networking, and enterprise infrastructure.
 
@@ -38,9 +38,26 @@ The purpose of this repository is to document practical experience with Cisco ne
 - Wireless LANs
 - Multilayer switching
 
+## Repository Structure
+
+The labs are organized by CCNA-level topic area:
+
+| Folder | Focus |
+| --- | --- |
+| `01-network-fundamentals` | Packet Tracer basics, OSI model, device connections, interfaces, packet flow |
+| `02-ip-addressing` | IPv4 addressing and VLSM |
+| `03-switching-and-vlans` | Ethernet switching, VLANs, DTP/VTP, STP, HSRP, multilayer switching |
+| `04-routing` | Static routes, floating static routes, EIGRP, OSPF, routing troubleshooting |
+| `05-ipv6` | IPv6 configuration and IPv6 static routes |
+| `06-network-services` | DHCP, DNS, NTP, FTP/TFTP, SSH, NAT |
+| `07-security` | Device security, ACLs, DHCP Snooping, Dynamic ARP Inspection |
+| `08-wan-and-tunneling` | GRE tunnels |
+| `09-wireless` | Wireless LANs |
+| `10-enterprise-capstone` | Larger enterprise-style lab combining multiple topics |
+
 ## Enterprise Infrastructure Lab
 
-The `Enterprise__Infrastructure.pkt` file is the main capstone-style lab in this repository. It simulates a small enterprise network and includes many technologies used together in one topology.
+The `10-enterprise-capstone/Enterprise__Infrastructure.pkt` file is the main capstone-style lab in this repository. It simulates a small enterprise network and includes many technologies used together in one topology.
 
 This lab includes work with:
 
@@ -62,17 +79,15 @@ This lab includes work with:
 - IPv6 migration basics
 - Wireless LAN configuration using a WLC
 
-The file `Enterprise_Instructions.txt` contains the original task list used for the enterprise lab.
-
-## Repository Structure
+The file `10-enterprise-capstone/Enterprise_Instructions.txt` contains the original task list used for the enterprise lab.
 
 Most files in this repository are Cisco Packet Tracer `.pkt` files. Each file is named after the topic it demonstrates, for example:
 
-- `VLANs (Part 1).pkt`
-- `OSPF (Part 3).pkt`
-- `DHCP Snooping.pkt`
-- `Dynamic ARP Inspection.pkt`
-- `Enterprise__Infrastructure.pkt`
+- `03-switching-and-vlans/VLANs (Part 1).pkt`
+- `04-routing/OSPF (Part 3).pkt`
+- `07-security/DHCP Snooping.pkt`
+- `07-security/Dynamic ARP Inspection.pkt`
+- `10-enterprise-capstone/Enterprise__Infrastructure.pkt`
 
 ## Reviewing the Labs
 
